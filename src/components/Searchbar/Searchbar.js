@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { MdSearch } from 'react-icons/md';
 // import styles from './Searchbar.module.css';
 
