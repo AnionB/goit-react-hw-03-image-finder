@@ -1,4 +1,5 @@
 import { SpinnerInfinity } from 'spinners-react';
+import styles from './Loader.module.css';
 
 export default function Loader() {
   return (
@@ -8,7 +9,7 @@ export default function Loader() {
       speed={180}
       color="rgba(61, 172, 57, 1)"
       secondaryColor="#3f51b5"
-      className="loader"
+      className={styles.loader}
     />
   );
 }
