@@ -1,13 +1,37 @@
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-export default function Modal({ currentPicture, onClick }) {
-  return (
-    <div className="overlay" onClick={e => onClick(e)}>
-      <div className="modal">
-        <img src={currentPicture.largeImageURL} alt={currentPicture.tags} />
+export default class Modal extends Component {
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown);
+  }
+
+  handleKeyDown = ({ key }) => {
+    if (key === 'Escape') {
+      this.props.closeModal();
+    }
+  };
+
+  handleClick = e => {
+    if (e.target === e.currentTarget) {
+      this.props.closeModal();
+    }
+  };
+
+  render() {
+    const { largeImageURL, tags } = this.props.currentPicture;
+    return (
+      <div className="overlay" onClick={this.handleClick}>
+        <div className="modal">
+          <img src={largeImageURL} alt={tags} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 Modal.propTypes = {
@@ -15,5 +39,5 @@ Modal.propTypes = {
     largeImageURL: PropTypes.string.isRequired,
     tags: PropTypes.string.isRequired,
   }).isRequired,
-  onClick: PropTypes.func.isRequired,
+  closeModal: PropTypes.func.isRequired,
 };

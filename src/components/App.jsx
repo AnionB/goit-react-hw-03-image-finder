@@ -14,14 +14,25 @@ export class App extends Component {
     pictureToFind: '',
     pictures: [],
     nextPage: 1,
-    currentPicture: '',
+    currentPicture: null,
     loading: false,
     showModal: false,
   };
+
   componentDidUpdate(prevProps, prevState) {
     if (prevState.pictures !== this.state.pictures && this.state.nextPage > 2) {
       this.scroll();
     }
+  }
+
+  scroll() {
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
   }
 
   findPictures = pictureToFind => {
@@ -56,42 +67,25 @@ export class App extends Component {
     this.getPicture(this.state.pictureToFind, this.state.nextPage);
   };
 
-  scroll() {
-    const { height: cardHeight } = document
-      .querySelector('.gallery')
-      .firstElementChild.getBoundingClientRect();
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: 'smooth',
-    });
-  }
-
   openModal = picture => {
     this.setState({ currentPicture: picture });
-    this.setState({ showModal: true });
-    document.addEventListener('keydown', this.listener);
-  };
-  closeModal = e => {
-    if (e.target === e.currentTarget) {
-      this.setState({ showModal: false });
-      document.removeEventListener('keydown', this.listener);
-    }
+    this.toggleModal();
   };
 
-  listener = ({ key }) => {
-    if (key === 'Escape') {
-      this.setState({ showModal: false });
-      document.removeEventListener('keydown', this.listener);
-    }
+  toggleModal = () => {
+    this.setState(prevState => ({ showModal: !prevState.showModal }));
   };
 
   render() {
+    const { pictureToFind, pictures, currentPicture, loading, showModal } =
+      this.state;
+
     return (
       <div className="app">
         <Searchbar onSubmit={this.findPictures} />
-        {this.state.pictures.length > 0 && (
-          <ImageGallery findPicture={this.state.pictureToFind}>
-            {this.state.pictures.map(picture => (
+        {pictures.length > 0 && (
+          <ImageGallery findPicture={pictureToFind}>
+            {pictures.map(picture => (
               <ImageGalleryItem
                 key={picture.id}
                 picture={picture}
@@ -100,14 +94,14 @@ export class App extends Component {
             ))}
           </ImageGallery>
         )}
-        {this.state.pictures.length > 0 && !this.state.loading && (
+        {pictures.length > 0 && !loading && (
           <Button handleClick={this.handleBtnClick} />
         )}
-        {this.state.loading && <Loader />}
-        {this.state.showModal && (
+        {loading && <Loader />}
+        {showModal && (
           <Modal
-            currentPicture={this.state.currentPicture}
-            onClick={this.closeModal}
+            currentPicture={currentPicture}
+            closeModal={this.toggleModal}
           />
         )}
       </div>
