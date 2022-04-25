@@ -66,25 +66,21 @@ export class App extends Component {
     });
   }
 
-  toggleModal = () => {
-    this.setState(prevState => ({ showModal: !prevState.showModal }));
-  };
-
-  listener = ({ key }) => {
-    if (key === 'Escape') {
-      this.toggleModal();
-      document.removeEventListener('keydown', this.listener);
-    }
-  };
-
   openModal = picture => {
     this.setState({ currentPicture: picture });
-    this.toggleModal();
+    this.setState({ showModal: true });
     document.addEventListener('keydown', this.listener);
   };
   closeModal = e => {
     if (e.target === e.currentTarget) {
-      this.toggleModal();
+      this.setState({ showModal: false });
+      document.removeEventListener('keydown', this.listener);
+    }
+  };
+
+  listener = ({ key }) => {
+    if (key === 'Escape') {
+      this.setState({ showModal: false });
       document.removeEventListener('keydown', this.listener);
     }
   };
