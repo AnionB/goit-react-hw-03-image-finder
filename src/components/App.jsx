@@ -16,7 +16,6 @@ export class App extends Component {
     nextPage: 1,
     currentPicture: null,
     loading: false,
-    showModal: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -69,16 +68,10 @@ export class App extends Component {
 
   openModal = picture => {
     this.setState({ currentPicture: picture });
-    this.toggleModal();
-  };
-
-  toggleModal = () => {
-    this.setState(prevState => ({ showModal: !prevState.showModal }));
   };
 
   render() {
-    const { pictureToFind, pictures, currentPicture, loading, showModal } =
-      this.state;
+    const { pictureToFind, pictures, currentPicture, loading } = this.state;
 
     return (
       <div className="app">
@@ -98,10 +91,10 @@ export class App extends Component {
           <Button handleClick={this.handleBtnClick} />
         )}
         {loading && <Loader />}
-        {showModal && (
+        {currentPicture && (
           <Modal
             currentPicture={currentPicture}
-            closeModal={this.toggleModal}
+            closeModal={() => this.setState({ currentPicture: null })}
           />
         )}
       </div>
