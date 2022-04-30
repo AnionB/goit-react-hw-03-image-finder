@@ -13,23 +13,32 @@ export class App extends Component {
   state = {
     pictureToFind: '',
     pictures: [],
-    nextPage: 1,
+    currentPage: 1,
     currentPicture: null,
     loading: false,
+    totalHits: null,
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.pictures !== this.state.pictures && this.state.nextPage > 2) {
+  componentDidUpdate(prevProps, { pictureToFind, currentPage, pictures }) {
+    if (
+      pictureToFind !== this.state.pictureToFind ||
+      currentPage !== this.state.currentPage
+    ) {
+      this.getPicture(this.state.pictureToFind, this.state.currentPage);
+    }
+
+    if (
+      !this.state.loading &&
+      this.state.currentPage > 1 &&
+      pictures.length !== this.state.pictures.length
+    ) {
       this.scroll();
     }
   }
 
   scroll() {
-    const { height: cardHeight } = document
-      .querySelector('.gallery')
-      .firstElementChild.getBoundingClientRect();
     window.scrollBy({
-      top: cardHeight * 2,
+      top: 520,
       behavior: 'smooth',
     });
   }
@@ -39,10 +48,10 @@ export class App extends Component {
       this.setState({
         pictureToFind: pictureToFind,
         pictures: [],
-        nextPage: 1,
+        currentPage: 1,
         loading: true,
+        totalHits: null,
       });
-      this.getPicture(pictureToFind, '1');
     }
   };
 
@@ -55,15 +64,18 @@ export class App extends Component {
       .then(response => {
         this.setState(prevState => ({
           pictures: [...prevState.pictures, ...response.data.hits],
-          nextPage: prevState.nextPage + 1,
           loading: false,
+          totalHits: response.data.totalHits,
         }));
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   handleBtnClick = () => {
-    this.setState({ loading: true });
-    this.getPicture(this.state.pictureToFind, this.state.nextPage);
+    this.setState(({ currentPage }) => ({
+      currentPage: currentPage + 1,
+      loading: true,
+    }));
   };
 
   openModal = picture => {
@@ -71,7 +83,14 @@ export class App extends Component {
   };
 
   render() {
-    const { pictureToFind, pictures, currentPicture, loading } = this.state;
+    const {
+      pictureToFind,
+      pictures,
+      currentPicture,
+      loading,
+      totalHits,
+      currentPage,
+    } = this.state;
 
     return (
       <div className="app">
@@ -87,7 +106,7 @@ export class App extends Component {
             ))}
           </ImageGallery>
         )}
-        {pictures.length > 0 && !loading && (
+        {pictures.length > 0 && !loading && totalHits > currentPage * 12 && (
           <Button handleClick={this.handleBtnClick} />
         )}
         {loading && <Loader />}

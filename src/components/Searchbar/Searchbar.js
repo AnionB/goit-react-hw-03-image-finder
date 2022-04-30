@@ -15,7 +15,7 @@ export default class Searchbar extends Component {
   handleSubmit = e => {
     e.preventDefault();
     this.props.onSubmit(this.state.pictureToFind.trim());
-    this.setState({ pictureToFind: '' });
+    // this.setState({ pictureToFind: '' });
   };
 
   render() {
